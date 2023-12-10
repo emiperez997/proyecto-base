@@ -2,16 +2,13 @@ import express from "express";
 import { __dirname } from "./dirname.js";
 import handlebars from "express-handlebars";
 import viewsRouter from "./routes/views.routes.js";
-import { Server } from "socket.io";
+import { password, PORT, db_name } from "./env.js";
+import usersRouter from "./routes/users.routes.js";
 
 const app = express();
-const PORT = 5000;
 
-const httpServer = app.listen(PORT, () =>
-  console.log(`Server running on port ${PORT}`)
-);
-
-const io = new Server(httpServer);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.engine(
   "hbs",
@@ -27,7 +24,6 @@ app.set("views", __dirname + "/views");
 app.use(express.static(__dirname + "/public"));
 
 app.use("/", viewsRouter);
+app.use("/api/users", usersRouter);
 
-io.on("connection", (socket) => {
-  console.log("Nuevo usuario conectado");
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
